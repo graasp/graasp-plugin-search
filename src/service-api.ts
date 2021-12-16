@@ -21,7 +21,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       case 'tag':
         return taskManager.createSearchByTagTask(member, keyword);
     }
-  }
+  };
 
   // search for items with keyword
   // range: title, tag
@@ -29,6 +29,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   fastify.get<{ Params: { keyword: string, range: string }; }>(
     '/search/:range/:keyword',
     async ({ member, params: { keyword, range }, log }) => {
+      console.log(keyword, range);
       const task = getTaskByRange(keyword, range, member);
       return runner.runSingle(task, log);
     },

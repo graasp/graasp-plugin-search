@@ -1,5 +1,5 @@
 // global
-import { Item, ItemService } from 'graasp';
+import { Item } from 'graasp';
 import { sql, DatabaseTransactionConnectionType as TrxHandler } from 'slonik';
 // local
 
@@ -31,14 +31,15 @@ export class SearchService {
   );
 
   // return items contain keyword in title
-  async getItemsMatchName(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
+  async getItemsMatchTitle(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
+    console.log('to db query');
     return (
       transactionHandler
         .query<Item>(
           sql`
           SELECT ${SearchService.allColumns}
           FROM item
-          WHERE name ILIKE '%${keyword}%'
+          WHERE name ILIKE ${keyword}
         `,
         )
         .then(({ rows }) => rows.slice(0))
@@ -53,7 +54,7 @@ export class SearchService {
           sql`
           SELECT ${SearchService.allColumns}
           FROM item
-          WHERE settings->>tags ILIKE '%${keyword}%'
+          WHERE settings->>'tags' ILIKE ${keyword}
         `,
         )
         .then(({ rows }) => rows.slice(0))

@@ -1,5 +1,5 @@
 // global
-import { DatabaseTransactionHandler, Item, Member } from 'graasp'
+import { DatabaseTransactionHandler, Item, Member } from 'graasp';
 // local
 import { SearchService } from '../db-service';
 import { BaseSearchTask } from './base-search-task';
@@ -23,7 +23,8 @@ export class SearchByTagTask extends BaseSearchTask<Item[]> {
     this.status = 'RUNNING';
 
     const { keyword } = this.input;
-    const items = await this.searchService.getItemsMatchName(keyword, handler);
+    const keywordFormatted = '%'+keyword+'%';
+    const items = await this.searchService.getItemsMatchTag(keywordFormatted, handler);
 
     this.status = 'OK';
     this._result = items;
