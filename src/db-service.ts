@@ -37,9 +37,14 @@ export class SearchService {
       transactionHandler
         .query<Item>(
           sql`
+          WITH published_item_paths AS (
+            SELECT item_path FROM item_tag
+            WHERE tag_id = 'ea9a3b4e-7b67-44c2-a9df-528b6ae5424f'
+          )
           SELECT ${SearchService.allColumns}
           FROM item
           WHERE name ILIKE ${keyword}
+            AND path in (SELECT item_path FROM published_item_paths)
         `,
         )
         .then(({ rows }) => rows.slice(0))
@@ -52,9 +57,14 @@ export class SearchService {
       transactionHandler
         .query<Item>(
           sql`
+          WITH published_item_paths AS (
+            SELECT item_path FROM item_tag
+            WHERE tag_id = 'ea9a3b4e-7b67-44c2-a9df-528b6ae5424f'
+          )
           SELECT ${SearchService.allColumns}
           FROM item
-          WHERE settings->>'tags' ILIKE ${keyword}
+          WHERE settings->>'tags' ILIKE ${keyword} 
+            AND path in (SELECT item_path FROM published_item_paths)
         `,
         )
         .then(({ rows }) => rows.slice(0))
