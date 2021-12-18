@@ -32,7 +32,6 @@ export class SearchService {
 
   // return items contain keyword in title
   async getItemsMatchTitle(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
-    console.log('to db query');
     return (
       transactionHandler
         .query<Item>(
@@ -64,6 +63,29 @@ export class SearchService {
           SELECT ${SearchService.allColumns}
           FROM item
           WHERE settings->>'tags' ILIKE ${keyword} 
+            AND path in (SELECT item_path FROM published_item_paths)
+        `,
+        )
+        .then(({ rows }) => rows.slice(0))
+    );
+  }
+
+
+  // return items contain keyword in any field (name, description, tags) with Full Text Search
+  async getItemsMatchAny(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
+    return (
+      transactionHandler
+        .query<Item>(
+          sql`
+          WITH published_item_paths AS (
+            SELECT item_path FROM item_tag
+            WHERE tag_id = 'ea9a3b4e-7b67-44c2-a9df-528b6ae5424f'
+          )
+          SELECT ${SearchService.allColumns}
+          FROM item
+          WHERE to_tsvector(
+            name || ' ' || coalesce(description, '') || ' ' || coalesce(settings->>'tags', '')
+            ) @@ to_tsquery(${keyword})
             AND path in (SELECT item_path FROM published_item_paths)
         `,
         )

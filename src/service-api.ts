@@ -20,12 +20,14 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         return taskManager.createSearchByTitleTask(member, keyword);
       case 'tag':
         return taskManager.createSearchByTagTask(member, keyword);
+      case 'all':
+        return taskManager.createSearchByAllTask(member, keyword);
     }
   };
 
   // search for items with keyword
-  // range: title, tag
-  // TODO: search for author and ALL
+  // range: title, tag, all
+  // TODO: search for author
   fastify.get<{ Params: { keyword: string, range: string }; }>(
     '/search/:range/:keyword',
     async ({ member, params: { keyword, range }, log }) => {
