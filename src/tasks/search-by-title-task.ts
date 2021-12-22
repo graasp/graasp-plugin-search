@@ -14,7 +14,7 @@ export class SearchByTitleTask extends BaseSearchTask<Item[]> {
     return SearchByTitleTask.name;
   }
 
-  constructor(input: InputType, member: Member, searchService: SearchService) {
+  constructor(member: Member, searchService: SearchService, input: InputType) {
     super(member, searchService);
     this.input = input;
   }
@@ -23,8 +23,9 @@ export class SearchByTitleTask extends BaseSearchTask<Item[]> {
     this.status = 'RUNNING';
 
     const { keyword } = this.input;
-    const keywordFormatted = '%'+keyword+'%';
-    const items = await this.searchService.getItemsMatchTitle(keywordFormatted, handler);
+    const formattedKeyword = `%${keyword}%`;
+    console.log(formattedKeyword);
+    const items = await this.searchService.getItemsMatchName(formattedKeyword, handler);
 
     this.status = 'OK';
     this._result = items;

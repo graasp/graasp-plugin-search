@@ -14,7 +14,7 @@ export class SearchByAllTask extends BaseSearchTask<Item[]> {
     return SearchByAllTask.name;
   }
 
-  constructor(input: InputType, member: Member, searchService: SearchService) {
+  constructor(member: Member, searchService: SearchService, input: InputType) {
     super(member, searchService);
     this.input = input;
   }

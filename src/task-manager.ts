@@ -20,14 +20,14 @@ export class TaskManager implements SearchTaskManager {
   getSearchByAllTaskName(): string { return SearchByAllTask.name; }
 
   createSearchByTitleTask(member: Member, keyword: string): SearchByTitleTask {
-    return new SearchByTitleTask({keyword: keyword}, member, this.searchService);
+    return new SearchByTitleTask(member, this.searchService, {keyword: keyword});
   }
 
   createSearchByTagTask(member: Member, keyword: string): SearchByTagTask {
-    return new SearchByTagTask({keyword: keyword}, member, this.searchService);
+    return new SearchByTagTask(member, this.searchService, {keyword: keyword});
   }
 
   createSearchByAllTask(member: Member, keyword: string): SearchByAllTask {
-    return new SearchByAllTask({keyword: keyword}, member, this.searchService);
+    return new SearchByAllTask(member, this.searchService, {keyword: keyword});
   }
 }

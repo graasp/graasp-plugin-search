@@ -4,9 +4,15 @@ import { sql, DatabaseTransactionConnectionType as TrxHandler } from 'slonik';
 // local
 
 /**
- * Database's first layer of abstraction for Categorys
+ * Database's first layer of abstraction for advanced search features
  */
-export class SearchService {
+export class SearchService{
+  publishedTagId: string;
+
+  constructor(publishedTagId: string){
+    this.publishedTagId = publishedTagId;
+  }
+
   private static allColumns = sql.join(
     [
       'id',
@@ -30,19 +36,23 @@ export class SearchService {
     sql`, `,
   );
 
-  // return items contain keyword in title
-  async getItemsMatchTitle(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
+  /**
+  * <keywordSequence>: string, containing formatted keyword. 
+  * @return items containing keywords in name
+  * Note: When searching with Name, the input will be treated as a single keyword
+  */
+  async getItemsMatchName(keywordSequence: string, transactionHandler: TrxHandler): Promise<Item[]> {
     return (
       transactionHandler
         .query<Item>(
           sql`
           WITH published_item_paths AS (
             SELECT item_path FROM item_tag
-            WHERE tag_id = 'ea9a3b4e-7b67-44c2-a9df-528b6ae5424f'
+            WHERE tag_id = ${this.publishedTagId}
           )
           SELECT ${SearchService.allColumns}
           FROM item
-          WHERE name ILIKE ${keyword}
+          WHERE name ILIKE ${keywordSequence}
             AND path in (SELECT item_path FROM published_item_paths)
         `,
         )
@@ -50,19 +60,22 @@ export class SearchService {
     );
   }
 
-  // return items contain keyword in tags
-  async getItemsMatchTag(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
+  /**
+  * <keywordSequence>: string, containing formatted keywords
+  * @return items containing keywords in tags
+  */
+  async getItemsMatchTag(keywordSequence: string, transactionHandler: TrxHandler): Promise<Item[]> {
     return (
       transactionHandler
         .query<Item>(
           sql`
           WITH published_item_paths AS (
             SELECT item_path FROM item_tag
-            WHERE tag_id = 'ea9a3b4e-7b67-44c2-a9df-528b6ae5424f'
+            WHERE tag_id = ${this.publishedTagId}
           )
           SELECT ${SearchService.allColumns}
           FROM item
-          WHERE settings->>'tags' ILIKE ${keyword} 
+          WHERE to_tsvector(settings->>'tags') @@ to_tsquery(${keywordSequence})
             AND path in (SELECT item_path FROM published_item_paths)
         `,
         )
@@ -71,7 +84,10 @@ export class SearchService {
   }
 
 
-  // return items contain keyword in any field (name, description, tags) with Full Text Search
+  /**
+  * <keywordSequence>: string, containing formatted keywords
+  * @return items containing keywords in name, description or tags
+  */
   async getItemsMatchAny(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
     return (
       transactionHandler
@@ -79,7 +95,7 @@ export class SearchService {
           sql`
           WITH published_item_paths AS (
             SELECT item_path FROM item_tag
-            WHERE tag_id = 'ea9a3b4e-7b67-44c2-a9df-528b6ae5424f'
+            WHERE tag_id = ${this.publishedTagId}
           )
           SELECT ${SearchService.allColumns}
           FROM item
@@ -88,7 +104,9 @@ export class SearchService {
             ) @@ to_tsquery(${keyword})
             AND path in (SELECT item_path FROM published_item_paths)
         `,
-        )
+        ) // this query concatenate name, description and tags into a single document. to_tsvector is a built-in function from Postgresql,
+          // which converts the text document into a group of vectors, and compare it to tsquery. to_tsquery converts query string into 
+          // vectors in a similar way. 
         .then(({ rows }) => rows.slice(0))
     );
   }

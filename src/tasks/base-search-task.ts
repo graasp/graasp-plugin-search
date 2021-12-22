@@ -17,6 +17,11 @@ export abstract class BaseSearchTask<R> implements Task<Actor, R> {
   preHookHandler: PreHookHandlerType<R>;
   postHookHandler: PostHookHandlerType<R>;
 
+  skip?: boolean;
+  input?: unknown;
+  getInput?: () => unknown;
+  getResult?: () => unknown;
+
   constructor(actor: Member, searchService: SearchService) {
     this.actor = actor;
     this.searchService = searchService;
