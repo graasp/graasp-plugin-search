@@ -5,7 +5,7 @@ const search = {
     },
     range: {
       type: 'string',
-      enum: ['title', 'tag', 'all']
+      enum: ['title', 'tag', 'all', 'author']
     }
   },
   required: ['range', 'keyword'],

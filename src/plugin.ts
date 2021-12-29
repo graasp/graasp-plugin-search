@@ -4,7 +4,7 @@ import { FastifyPluginAsync } from 'fastify';
 // local
 import { SearchService } from './db-service';
 import { TaskManager } from './task-manager';
-import { search } from './tasks/schemas';
+import { search } from './schemas';
 import { GraaspSearchPluginOptions } from './types';
 
 const plugin: FastifyPluginAsync<GraaspSearchPluginOptions> = async (fastify, options) => {
@@ -14,12 +14,11 @@ const plugin: FastifyPluginAsync<GraaspSearchPluginOptions> = async (fastify, op
   const searchService = new SearchService(options.publishedTagId);
   const taskManager = new TaskManager(searchService);
 
-  // TODO: schema
-
   enum ranges {
     title = 'title',
     tag = 'tag',
-    all = 'all'
+    all = 'all',
+    author = 'author'
   }
 
   const getTaskByRange = (member, keyword, range) => {
@@ -30,12 +29,13 @@ const plugin: FastifyPluginAsync<GraaspSearchPluginOptions> = async (fastify, op
         return taskManager.createSearchByTagTask(member, keyword);
       case ranges.all:
         return taskManager.createSearchByAllTask(member, keyword);
+      case ranges.author:
+        return taskManager.createSearchByAuthorTask(member, keyword);
     }
   };
 
   // search for items with keyword
-  // range: title, tag, all
-  // TODO: search for author
+  // range: title, tag, all, author
   fastify.get<{ Params: { keyword: string, range: string }; }>(
     '/search/:range/:keyword',
     { schema: search },

@@ -6,12 +6,12 @@ import { BaseSearchTask } from './base-search-task';
 
 type InputType = { keyword: string };
 
-export class SearchByTitleTask extends BaseSearchTask<Item[]> {
+export class SearchByAuthorTask extends BaseSearchTask<Item[]> {
   input: InputType;
   getInput: () => InputType;
 
   get name(): string {
-    return SearchByTitleTask.name;
+    return SearchByAuthorTask.name;
   }
 
   constructor(member: Member, searchService: SearchService, input: InputType) {
@@ -24,7 +24,7 @@ export class SearchByTitleTask extends BaseSearchTask<Item[]> {
 
     const { keyword } = this.input;
     const formattedKeyword = `%${keyword}%`;
-    const items = await this.searchService.getItemsMatchName(formattedKeyword, handler);
+    const items = await this.searchService.getItemsMatchAuthor(formattedKeyword, handler);
 
     this.status = 'OK';
     this._result = items;

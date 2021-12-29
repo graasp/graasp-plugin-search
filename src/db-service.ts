@@ -36,6 +36,29 @@ export class SearchService{
     sql`, `,
   );
 
+  private static allColumnsForJoinedTable = sql.join(
+    [
+      ['item.id', 'id'],
+      'item.name',
+      'description',
+      'item.type',
+      'path',
+      'item.extra',
+      'settings',
+      'creator',
+      ['item.created_at', 'createdAt'],
+      ['item.updated_at', 'updatedAt'],
+    ].map((c) =>
+      !Array.isArray(c)
+        ? sql.identifier([c])
+        : sql.join(
+            c.map((cwa) => sql.identifier([cwa])),
+            sql` AS `,
+          ),
+    ),
+    sql`, `,
+  );
+
   /**
   * <keywordSequence>: string, containing formatted keyword. 
   * @return items containing keywords in name
@@ -110,4 +133,32 @@ export class SearchService{
         .then(({ rows }) => rows.slice(0))
     );
   }
+
+    /**
+  * <keywordSequence>: string, containing formatted keyword (single keyword)
+  * @return items containing keyword in author name
+  */
+    async getItemsMatchAuthor(keywordSequence: string, transactionHandler: TrxHandler): Promise<Item[]> {
+    return (
+      transactionHandler
+        .query<Item>(
+          sql`
+          WITH published_item_paths AS (
+            SELECT item_path FROM item_tag
+            WHERE tag_id = ${this.publishedTagId}
+          ),
+          matching_authors AS (
+            SELECT id AS author_id FROM member
+            WHERE name ILIKE ${keywordSequence}
+          )
+          SELECT ${SearchService.allColumns}
+          FROM item
+          WHERE creator in (SELECT author_id FROM matching_authors)
+            AND path in (SELECT item_path FROM published_item_paths)
+        `,
+        )
+        .then(({ rows }) => rows.slice(0))
+    );
+  }
 }
+
