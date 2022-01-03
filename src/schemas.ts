@@ -1,3 +1,5 @@
+import { Ranges } from './types';
+
 const search = {
   params: {
     keyword: {
@@ -5,7 +7,7 @@ const search = {
     },
     range: {
       type: 'string',
-      enum: ['title', 'tag', 'all', 'author']
+      enum: Object.values(Ranges),
     }
   },
   required: ['range', 'keyword'],

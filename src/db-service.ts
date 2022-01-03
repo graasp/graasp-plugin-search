@@ -60,7 +60,7 @@ export class SearchService{
   );
 
   /**
-  * <keywordSequence>: string, containing formatted keyword. 
+  * @param {string} keywordSequence - containing formatted keyword. 
   * @return items containing keywords in name
   * Note: When searching with Name, the input will be treated as a single keyword
   */
@@ -84,7 +84,7 @@ export class SearchService{
   }
 
   /**
-  * <keywordSequence>: string, containing formatted keywords
+  * @param {string} keywordSequence - containing formatted keywords
   * @return items containing keywords in tags
   */
   async getItemsMatchTag(keywordSequence: string, transactionHandler: TrxHandler): Promise<Item[]> {
@@ -108,7 +108,7 @@ export class SearchService{
 
 
   /**
-  * <keywordSequence>: string, containing formatted keywords
+  * @param {string} keywordSequence - containing formatted keywords
   * @return items containing keywords in name, description or tags
   */
   async getItemsMatchAny(keyword: string, transactionHandler: TrxHandler): Promise<Item[]> {
@@ -134,11 +134,11 @@ export class SearchService{
     );
   }
 
-    /**
-  * <keywordSequence>: string, containing formatted keyword (single keyword)
+  /**
+  * @param {string} keywordSequence - containing formatted keyword (single keyword)
   * @return items containing keyword in author name
   */
-    async getItemsMatchAuthor(keywordSequence: string, transactionHandler: TrxHandler): Promise<Item[]> {
+  async getItemsMatchAuthor(keywordSequence: string, transactionHandler: TrxHandler): Promise<Item[]> {
     return (
       transactionHandler
         .query<Item>(
