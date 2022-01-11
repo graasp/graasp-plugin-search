@@ -7,7 +7,6 @@ import { SearchService } from './db-service';
 import { TaskManager } from './task-manager';
 import { search } from './schemas';
 import { Ranges } from './types';
-import { Member } from 'graasp';
 
 const publicPlugin: FastifyPluginAsync = async (fastify) => {
   const {
@@ -43,7 +42,7 @@ const publicPlugin: FastifyPluginAsync = async (fastify) => {
     '/search/:range/:keyword',
     { schema: search },
     async ({ params: { keyword, range }, log }) => {
-      const task = getTaskByRange(graaspActor as Member, keyword, range);
+      const task = getTaskByRange(graaspActor, keyword, range);
       return runner.runSingle(task, log);
     },
   );

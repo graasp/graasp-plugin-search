@@ -1,5 +1,5 @@
 // global
-import { DatabaseTransactionHandler, Item, Member } from 'graasp';
+import { Actor, DatabaseTransactionHandler, Item } from 'graasp';
 // local
 import { SearchService } from '../db-service';
 import { BaseSearchTask } from './base-search-task';
@@ -14,7 +14,7 @@ export class SearchByTitleTask extends BaseSearchTask<Item[]> {
     return SearchByTitleTask.name;
   }
 
-  constructor(member: Member, searchService: SearchService, input: InputType) {
+  constructor(member: Actor, searchService: SearchService, input: InputType) {
     super(member, searchService);
     this.input = input;
   }
