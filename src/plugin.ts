@@ -1,18 +1,27 @@
 // global
 import { FastifyPluginAsync } from 'fastify';
+import graaspPublicPlugin from 'graasp-plugin-public';
 
 // local
 import { SearchService } from './db-service';
 import { TaskManager } from './task-manager';
 import { search } from './schemas';
-import { GraaspSearchPluginOptions, Ranges } from './types';
+import { Ranges } from './types';
 
-const plugin: FastifyPluginAsync<GraaspSearchPluginOptions> = async (fastify, options) => {
+const publicPlugin: FastifyPluginAsync = async (fastify) => {
   const {
-    taskRunner: runner
+    taskRunner: runner,
+    public: {
+      graaspActor,
+      publishedTagId,
+    },
   } = fastify;
-  const searchService = new SearchService(options.publishedTagId);
+  const searchService = new SearchService(publishedTagId);
   const taskManager = new TaskManager(searchService);
+
+  if (!graaspPublicPlugin) {
+    throw new Error('Public plugin is not correctly defined');
+  }
 
   const getTaskByRange = (member, keyword, range) => {
     switch (range) {
@@ -32,12 +41,12 @@ const plugin: FastifyPluginAsync<GraaspSearchPluginOptions> = async (fastify, op
   fastify.get<{ Params: { keyword: string, range: string }; }>(
     '/search/:range/:keyword',
     { schema: search },
-    async ({ member, params: { keyword, range }, log }) => {
-      const task = getTaskByRange(member, keyword, range);
+    async ({ params: { keyword, range }, log }) => {
+      const task = getTaskByRange(graaspActor, keyword, range);
       return runner.runSingle(task, log);
     },
   );
 
 };
 
-export default plugin;
+export default publicPlugin;

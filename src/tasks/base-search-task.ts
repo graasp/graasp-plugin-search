@@ -1,7 +1,6 @@
 // global
 import { FastifyLoggerInstance } from 'fastify';
 import { Actor, Task, TaskStatus, IndividualResultType, PreHookHandlerType, PostHookHandlerType, DatabaseTransactionHandler } from 'graasp';
-import { Member } from 'graasp';
 // local
 import { SearchService } from '../db-service';
 
@@ -10,7 +9,7 @@ export abstract class BaseSearchTask<R> implements Task<Actor, R> {
   protected _result: R;
   protected _message: string;
 
-  readonly actor: Member;
+  readonly actor: Actor;
 
   status: TaskStatus;
   data: Partial<IndividualResultType<R>>;
@@ -22,7 +21,7 @@ export abstract class BaseSearchTask<R> implements Task<Actor, R> {
   getInput?: () => unknown;
   getResult?: () => unknown;
 
-  constructor(actor: Member, searchService: SearchService) {
+  constructor(actor: Actor, searchService: SearchService) {
     this.actor = actor;
     this.searchService = searchService;
     this.status = 'NEW';
