@@ -23,7 +23,8 @@ export class SearchByAllTask extends BaseSearchTask<Item[]> {
     this.status = 'RUNNING';
 
     const { keyword } = this.input;
-    const items = await this.searchService.getItemsMatchAny(keyword, handler);
+    const keywordSequence = `${keyword.split(' ').map(entry => entry.trim()).join(':* & ')}:*`;
+    const items = await this.searchService.getItemsMatchAny(keywordSequence, handler);
 
     this.status = 'OK';
     this._result = items;
