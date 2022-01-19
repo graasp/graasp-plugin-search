@@ -23,6 +23,7 @@ export class SearchByAllTask extends BaseSearchTask<Item[]> {
     this.status = 'RUNNING';
 
     const { keyword } = this.input;
+    // preprocess keywords: convert it from 'A B C' to 'A:* & B:* & C:*', ':*' is used for prefix matching in Full Text Search
     const keywordSequence = `${keyword.split(' ').map(entry => entry.trim()).join(':* & ')}:*`;
     const items = await this.searchService.getItemsMatchAny(keywordSequence, handler);
 
