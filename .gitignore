@@ -21,3 +21,5 @@ Thumbs.db
 
 .yarn/cache
 .yarn/install-state.gz
+
+coverage/
