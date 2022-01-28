@@ -6,6 +6,7 @@ import {
 } from 'graasp-test';
 import { StatusCodes } from 'http-status-codes';
 import publicPlugin from '../src/plugin';
+import { Ranges } from '../src/types';
 import build from './app';
 import {
   buildItem,
@@ -22,25 +23,28 @@ describe('Public Keyword Search', () => {
   });
 
   describe('GET /search/:range/:keyword', () => {
-    it('Get search result', async () => {
-      const app = await build({
-        plugin: publicPlugin,
-        runner,
-        itemMembershipTaskManager,
-        itemTaskManager,
-        publicItemTaskManager,
+    Object.values(Ranges).forEach((rangeType) => {
+      it(`Get search result for ${rangeType}`, async () => {
+        const app = await build({
+          plugin: publicPlugin,
+          runner,
+          itemMembershipTaskManager,
+          itemTaskManager,
+          publicItemTaskManager,
+        });
+  
+        const result = buildItem();
+        jest.spyOn(runner, 'runSingle').mockImplementation(async () => result);
+  
+        const res = await app.inject({
+          method: 'GET',
+          url: `/search/${rangeType}/test`,
+        });
+        expect(res.statusCode).toBe(StatusCodes.OK);
+        expect(res.json()).toEqual(result);
       });
-
-      const result = buildItem();
-      jest.spyOn(runner, 'runSingle').mockImplementation(async () => result);
-
-      const res = await app.inject({
-        method: 'GET',
-        url: '/search/all/test',
-      });
-      expect(res.statusCode).toBe(StatusCodes.OK);
-      expect(res.json()).toEqual(result);
     });
+
     it('Throw if range is invalid', async () => {
       const app = await build({
         plugin: publicPlugin,
