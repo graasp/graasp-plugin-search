@@ -1,6 +1,10 @@
-// global
-import { Actor, DatabaseTransactionHandler, Item } from 'graasp';
-// local
+import {
+  Actor,
+  DatabaseTransactionHandler,
+  Item,
+  TaskStatus,
+} from '@graasp/sdk';
+
 import { SearchService } from '../db-service';
 import { BaseSearchTask } from './base-search-task';
 
@@ -20,14 +24,20 @@ export class SearchByAllTask extends BaseSearchTask<Item[]> {
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { keyword } = this.input;
     // preprocess keywords: convert it from 'A B C' to 'A:* & B:* & C:*', ':*' is used for prefix matching in Full Text Search
-    const keywordSequence = `${keyword.split(' ').map(entry => entry.trim()).join(':* & ')}:*`;
-    const items = await this.searchService.getItemsMatchAny(keywordSequence, handler);
+    const keywordSequence = `${keyword
+      .split(' ')
+      .map((entry) => entry.trim())
+      .join(':* & ')}:*`;
+    const items = await this.searchService.getItemsMatchAny(
+      keywordSequence,
+      handler,
+    );
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
     this._result = items;
   }
 }

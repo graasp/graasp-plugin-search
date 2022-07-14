@@ -1,11 +1,12 @@
 import fastify, { FastifyPluginAsync } from 'fastify';
-import { PublicItemTaskManager } from 'graasp-plugin-public';
 
+import { PublicItemTaskManager } from 'graasp-plugin-public';
 import {
-  TaskRunner,
-  ItemTaskManager,
   ItemMembershipTaskManager,
+  ItemTaskManager,
+  TaskRunner,
 } from 'graasp-test';
+
 import {
   DEFAULT_GRAASP_ACTOR,
   PUBLIC_TAG_ID,

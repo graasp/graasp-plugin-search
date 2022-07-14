@@ -1,7 +1,16 @@
 // global
 import { FastifyLoggerInstance } from 'fastify';
-import { Actor, Task, TaskStatus, IndividualResultType, PreHookHandlerType, PostHookHandlerType, DatabaseTransactionHandler } from 'graasp';
-// local
+
+import {
+  Actor,
+  DatabaseTransactionHandler,
+  IndividualResultType,
+  PostHookHandlerType,
+  PreHookHandlerType,
+  Task,
+  TaskStatus,
+} from '@graasp/sdk';
+
 import { SearchService } from '../db-service';
 
 export abstract class BaseSearchTask<R> implements Task<Actor, R> {
@@ -24,12 +33,19 @@ export abstract class BaseSearchTask<R> implements Task<Actor, R> {
   constructor(actor: Actor, searchService: SearchService) {
     this.actor = actor;
     this.searchService = searchService;
-    this.status = 'NEW';
+    this.status = TaskStatus.NEW;
   }
 
   abstract get name(): string;
-  get result(): R { return this._result; }
-  get message(): string { return this._message; }
+  get result(): R {
+    return this._result;
+  }
+  get message(): string {
+    return this._message;
+  }
 
-  abstract run(handler: DatabaseTransactionHandler, log?: FastifyLoggerInstance): Promise<void | BaseSearchTask<R>[]>;
+  abstract run(
+    handler: DatabaseTransactionHandler,
+    log?: FastifyLoggerInstance,
+  ): Promise<void | BaseSearchTask<R>[]>;
 }
