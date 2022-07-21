@@ -1,16 +1,16 @@
+import { StatusCodes } from 'http-status-codes';
+
 import { PublicItemTaskManager } from 'graasp-plugin-public';
 import {
   ItemMembershipTaskManager,
   ItemTaskManager,
   TaskRunner,
 } from 'graasp-test';
-import { StatusCodes } from 'http-status-codes';
+
 import publicPlugin from '../src/plugin';
 import { Ranges } from '../src/types';
 import build from './app';
-import {
-  buildItem,
-} from './constants';
+import { buildItem } from './constants';
 
 const itemTaskManager = new ItemTaskManager();
 const runner = new TaskRunner();
@@ -32,10 +32,10 @@ describe('Public Keyword Search', () => {
           itemTaskManager,
           publicItemTaskManager,
         });
-  
+
         const result = buildItem();
         jest.spyOn(runner, 'runSingle').mockImplementation(async () => result);
-  
+
         const res = await app.inject({
           method: 'GET',
           url: `/search/${rangeType}/test`,

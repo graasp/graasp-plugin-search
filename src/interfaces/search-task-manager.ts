@@ -1,6 +1,4 @@
-// global
-import { Actor, Task } from 'graasp';
-
+import { Actor, Task } from '@graasp/sdk';
 
 export interface SearchTaskManager<A extends Actor = Actor> {
   getSearchByTitleTaskName(): string;

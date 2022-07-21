@@ -1,5 +1,6 @@
-import { Item, ItemMembership, Member } from 'graasp';
 import { v4 } from 'uuid';
+
+import { Item, ItemMembership, Member } from '@graasp/sdk';
 
 export const buildMember = (): Partial<Member> => ({
   id: v4(),

@@ -1,20 +1,16 @@
-// global
 import { FastifyPluginAsync } from 'fastify';
+
 import graaspPublicPlugin from 'graasp-plugin-public';
 
-// local
 import { SearchService } from './db-service';
-import { TaskManager } from './task-manager';
 import { search } from './schemas';
+import { TaskManager } from './task-manager';
 import { Ranges } from './types';
 
 const publicPlugin: FastifyPluginAsync = async (fastify) => {
   const {
     taskRunner: runner,
-    public: {
-      graaspActor,
-      publishedTagId,
-    },
+    public: { graaspActor, publishedTagId },
   } = fastify;
   const searchService = new SearchService(publishedTagId);
   const taskManager = new TaskManager(searchService);
@@ -38,7 +34,7 @@ const publicPlugin: FastifyPluginAsync = async (fastify) => {
 
   // search for items with keyword
   // range: title, tag, all, author
-  fastify.get<{ Params: { keyword: string, range: string }; }>(
+  fastify.get<{ Params: { keyword: string; range: string } }>(
     '/search/:range/:keyword',
     { schema: search },
     async ({ params: { keyword, range }, log }) => {
@@ -46,7 +42,6 @@ const publicPlugin: FastifyPluginAsync = async (fastify) => {
       return runner.runSingle(task, log);
     },
   );
-
 };
 
 export default publicPlugin;
