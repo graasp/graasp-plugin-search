@@ -1,6 +1,10 @@
-// global
-import { Actor, DatabaseTransactionHandler, Item } from 'graasp';
-// local
+import {
+  Actor,
+  DatabaseTransactionHandler,
+  Item,
+  TaskStatus,
+} from '@graasp/sdk';
+
 import { SearchService } from '../db-service';
 import { BaseSearchTask } from './base-search-task';
 
@@ -20,13 +24,16 @@ export class SearchByTitleTask extends BaseSearchTask<Item[]> {
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { keyword } = this.input;
     const formattedKeyword = `%${keyword}%`;
-    const items = await this.searchService.getItemsMatchName(formattedKeyword, handler);
+    const items = await this.searchService.getItemsMatchName(
+      formattedKeyword,
+      handler,
+    );
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
     this._result = items;
   }
 }
